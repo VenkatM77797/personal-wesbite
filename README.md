@@ -1,4 +1,4 @@
-# Venkat Portfolio
+# Portfolio
 
 A clean React + TypeScript + Vite portfolio project with the original UI preserved.
 
