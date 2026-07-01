@@ -1,3 +1,5 @@
+// src/App.tsx
+
 import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowRight,
@@ -23,7 +25,21 @@ import {
 
 import portrait from "./assets/portrait.jpg";
 
+type TabKey = "about" | "background" | "projects" | "contact";
 type Theme = "light" | "dark";
+
+const TABS: { key: TabKey; label: string }[] = [
+  { key: "about", label: "About" },
+  { key: "background", label: "Background" },
+  { key: "projects", label: "Projects" },
+  { key: "contact", label: "Contact" },
+];
+
+const STATIC_3D_CARD =
+  "border border-border shadow-[var(--shadow-card)]";
+
+const INTERACTIVE_3D_CARD =
+  "border border-border shadow-[var(--shadow-card)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[var(--shadow-card-hover)]";
 
 function getInitialTheme(): Theme {
   const savedTheme = localStorage.getItem("portfolio-theme");
@@ -36,18 +52,6 @@ function getInitialTheme(): Theme {
     ? "dark"
     : "light";
 }
-
-type TabKey = "about" | "background" | "projects" | "contact";
-
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "about", label: "About" },
-  { key: "background", label: "Background" },
-  { key: "projects", label: "Projects" },
-  { key: "contact", label: "Contact" },
-];
-
-const STATIC_3D_CARD =
-  "border border-border shadow-[var(--shadow-card)]";
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
@@ -75,24 +79,50 @@ export default function App() {
       });
     }, 180);
 
-    const toggleTheme = () => {
-      setTheme((currentTheme) =>
-        currentTheme === "dark" ? "light" : "dark",
-      );
-    };
-
     return () => {
       window.clearTimeout(timeout);
     };
   }, [tab, displayedTab]);
 
+  const toggleTheme = () => {
+    setTheme((currentTheme) =>
+      currentTheme === "dark" ? "light" : "dark",
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <button
+        type="button"
+        onClick={toggleTheme}
+        aria-label={`Switch to ${
+          theme === "dark" ? "light" : "dark"
+        } theme`}
+        title={`Switch to ${
+          theme === "dark" ? "light" : "dark"
+        } theme`}
+        className="
+          fixed right-4 top-4 z-50
+          flex h-11 w-11 items-center justify-center
+          rounded-xl border border-border bg-card text-foreground
+          shadow-[var(--shadow-card)]
+          transition-all duration-300
+          hover:-translate-y-0.5 hover:text-primary
+          sm:right-6 sm:top-6
+        "
+      >
+        {theme === "dark" ? (
+          <Sun className="h-5 w-5" />
+        ) : (
+          <Moon className="h-5 w-5" />
+        )}
+      </button>
+
       <div className="mx-auto grid w-full max-w-7xl items-start gap-4 px-3 py-4 sm:gap-6 sm:px-5 sm:py-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:px-8 lg:py-12">
         <Sidebar />
 
         <main
-          className={`${STATIC_3D_CARD} min-w-0 rounded-2xl bg-card p-4 sm:p-6 lg:p-10 ${
+          className={`${STATIC_3D_CARD} min-w-0 rounded-2xl bg-card p-4 transition-colors duration-300 sm:p-6 lg:p-10 ${
             displayedTab === "contact" ? "h-fit self-start" : ""
           }`}
         >
@@ -119,7 +149,7 @@ export default function App() {
 function Sidebar() {
   return (
     <aside
-      className={`${STATIC_3D_CARD} h-fit rounded-2xl bg-card p-5 sm:p-8 lg:sticky lg:top-8`}
+      className={`${STATIC_3D_CARD} h-fit rounded-2xl bg-card p-5 transition-colors duration-300 sm:p-8 lg:sticky lg:top-8`}
     >
       <div className="flex flex-col items-center text-center">
         <div
@@ -139,7 +169,7 @@ function Sidebar() {
           Venkat Mandarapu
         </h1>
 
-        <span className="mt-2 inline-flex items-center rounded-[8px] border bg-[#1a202c] px-3 py-1 text-[13px] font-medium text-[#cfd6e4] sm:text-[15px]">
+        <span className="mt-2 inline-flex items-center rounded-[8px] border border-border bg-secondary px-3 py-1 text-[13px] font-medium text-secondary-foreground sm:text-[15px]">
           Analytics Professional
         </span>
       </div>
@@ -237,8 +267,8 @@ function SocialButton({
       href={href}
       aria-label={label}
       className="
-        flex h-9 w-9 items-center justify-center rounded-lg
-        bg-secondary text-muted-foreground
+        group relative flex h-9 w-9 items-center justify-center
+        overflow-hidden rounded-lg bg-secondary text-muted-foreground
         transition-all duration-200 ease-out
         hover:-translate-y-0.5
         hover:bg-primary/15
@@ -248,6 +278,16 @@ function SocialButton({
       "
     >
       {children}
+
+      <span
+        className="
+          pointer-events-none absolute bottom-0 left-1/2
+          h-[2px] w-0 -translate-x-1/2 rounded-full
+          bg-gradient-to-r from-[#6576ff] to-[#20c9df]
+          transition-all duration-300 ease-out
+          group-hover:w-[65%]
+        "
+      />
     </a>
   );
 }
@@ -375,8 +415,7 @@ function About() {
         <p>
           That&apos;s where I come in. I translate messy business questions into
           structured analysis, clear requirements, and dashboards leaders
-          actually use. Add this is a placeholder bio you can rewrite to match
-          your story.
+          actually use.
         </p>
       </div>
 
@@ -388,7 +427,7 @@ function About() {
         {services.map((service) => (
           <div
             key={service.title}
-            className={`${STATIC_3D_CARD} group relative overflow-hidden rounded-xl bg-secondary/40 p-4 sm:p-5`}
+            className={`${STATIC_3D_CARD} group relative overflow-hidden rounded-xl bg-secondary/40 p-4 transition-colors duration-300 sm:p-5`}
           >
             <div className="flex items-start gap-3 sm:gap-4">
               <div
@@ -399,9 +438,7 @@ function About() {
               </div>
 
               <div className="min-w-0">
-                <h4 className="font-semibold">
-                  {service.title}
-                </h4>
+                <h4 className="font-semibold">{service.title}</h4>
 
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
                   {service.description}
@@ -426,7 +463,8 @@ function About() {
 }
 
 function Background() {
-  const [expandedExperience, setExpandedExperience] = useState<number>(0);
+  const [expandedExperience, setExpandedExperience] =
+    useState<number>(0);
 
   const toggleExperience = (index: number) => {
     setExpandedExperience((currentIndex) =>
@@ -532,7 +570,7 @@ function Background() {
       <SectionTitle>Experience</SectionTitle>
 
       <ol className="relative mt-6 sm:mt-8">
-        <div className="absolute bottom-6 left-[11px] top-6 w-px bg-[#29313c] sm:bottom-7 sm:left-[14px] sm:top-7" />
+        <div className="absolute bottom-6 left-[11px] top-6 w-px bg-border sm:bottom-7 sm:left-[14px] sm:top-7" />
 
         {experience.map((item, index) => {
           const isExpanded = expandedExperience === index;
@@ -546,15 +584,15 @@ function Background() {
                 className={`absolute left-0 top-5 z-10 flex h-6 w-6 items-center justify-center rounded-full sm:top-7 sm:h-7 sm:w-7 ${
                   isExpanded
                     ? "bg-gradient-to-br from-[#6576ff] to-[#35d2ff]"
-                    : "border-2 border-[#39424d] bg-[#10151d]"
+                    : "border-2 border-border bg-card"
                 }`}
               >
                 {isExpanded && (
-                  <span className="h-2.5 w-2.5 rounded-full bg-[#0b1018] sm:h-3 sm:w-3" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-card sm:h-3 sm:w-3" />
                 )}
               </span>
 
-              <div className="border-b border-[#252d37]">
+              <div className="border-b border-border">
                 <button
                   type="button"
                   onClick={() => toggleExperience(index)}
@@ -562,35 +600,36 @@ function Background() {
                   className="flex w-full flex-col items-start justify-between gap-3 py-5 text-left sm:flex-row sm:gap-6 sm:py-6"
                 >
                   <div className="min-w-0">
-                    <h4 className="text-base font-semibold leading-6 text-[#eef0f5] sm:text-[18px]">
+                    <h4 className="text-base font-semibold leading-6 text-foreground sm:text-[18px]">
                       {item.role}
                     </h4>
 
-                    <p className="mt-1 text-sm leading-6 text-[#d0d2d8] sm:text-[16px]">
+                    <p className="mt-1 text-sm leading-6 text-muted-foreground sm:text-[16px]">
                       {item.organization}
                     </p>
                   </div>
 
-                  <div className="flex w-full shrink-0 items-center justify-between gap-3 text-xs text-[#7f8ea5] sm:w-auto sm:justify-start sm:gap-4 sm:pt-1 sm:text-[15px]">
+                  <div className="flex w-full shrink-0 items-center justify-between gap-3 text-xs text-muted-foreground sm:w-auto sm:justify-start sm:gap-4 sm:pt-1 sm:text-[15px]">
                     <span>{item.period}</span>
 
                     {isExpanded ? (
-                      <ChevronUp className="h-4 w-4 text-[#d6dbe5]" />
+                      <ChevronUp className="h-4 w-4 text-foreground/80" />
                     ) : (
-                      <ChevronDown className="h-4 w-4 text-[#d6dbe5]" />
+                      <ChevronDown className="h-4 w-4 text-foreground/80" />
                     )}
                   </div>
                 </button>
 
                 {isExpanded && (
-                  <div className="border-t border-[#252d37] pb-6 pt-4 sm:pb-7 sm:pt-5">
+                  <div className="border-t border-border pb-6 pt-4 sm:pb-7 sm:pt-5">
                     <ul className="space-y-3">
                       {item.details.map((detail) => (
                         <li
                           key={detail}
-                          className="flex items-start gap-3 text-sm leading-6 text-[#c8cbd2] sm:gap-4 sm:text-[15px]"
+                          className="flex items-start gap-3 text-sm leading-6 text-muted-foreground sm:gap-4 sm:text-[15px]"
                         >
-                          <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#8187ff]" />
+                          <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-primary" />
+
                           <span>{detail}</span>
                         </li>
                       ))}
@@ -603,7 +642,7 @@ function Background() {
         })}
       </ol>
 
-      <div className="mt-10 mb-6 sm:mt-12 sm:mb-8">
+      <div className="mb-6 mt-10 sm:mb-8 sm:mt-12">
         <h3 className="text-2xl font-bold sm:text-3xl">
           Capabilities
         </h3>
@@ -617,7 +656,7 @@ function Background() {
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
         {capabilities.map((capability) => (
           <div key={capability.title} className="min-w-0">
-            <h4 className="mb-2 bg-gradient-to-r from-[#7b82ff] to-[#35d2ff] bg-clip-text text-[12px] font-semibold uppercase tracking-[0.05em] text-transparent sm:text-[13px] sm:tracking-[0.08em] lg:whitespace-nowrap lg:text-[14px] lg:tracking-[0.1em]">
+            <h4 className="mb-2 bg-gradient-to-r from-[#6576ff] to-[#20c9df] bg-clip-text text-[12px] font-semibold uppercase tracking-[0.05em] text-transparent sm:text-[13px] sm:tracking-[0.08em] lg:whitespace-nowrap lg:text-[14px] lg:tracking-[0.1em]">
               {capability.title}
             </h4>
 
@@ -625,9 +664,9 @@ function Background() {
               {capability.items.map((item, index) => (
                 <li
                   key={item}
-                  className={`py-3 text-sm leading-6 text-foreground/85 transition-all duration-200 hover:pl-1 hover:text-primary sm:py-3 sm:text-[15px] ${
+                  className={`py-3 text-sm leading-6 text-foreground/85 transition-all duration-200 hover:pl-1 hover:text-primary sm:py-4 sm:text-[15px] ${
                     index !== capability.items.length - 1
-                      ? "border-b border-white/10"
+                      ? "border-b border-border"
                       : ""
                   }`}
                 >
@@ -639,7 +678,7 @@ function Background() {
         ))}
       </div>
 
-      <div className="mt-10 mb-6 sm:mt-12">
+      <div className="mb-6 mt-10 sm:mt-12">
         <h3 className="text-2xl font-bold sm:text-3xl">
           Education &amp; Certifications
         </h3>
@@ -651,7 +690,9 @@ function Background() {
       </div>
 
       <div className="grid items-stretch gap-4 lg:grid-cols-2">
-        <div className="relative h-full rounded-xl border border-white/10 bg-secondary/40 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_14px_32px_rgba(0,0,0,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_38px_rgba(0,0,0,0.32),0_0_22px_rgba(55,190,255,0.08)] sm:p-5">
+        <div
+          className={`${INTERACTIVE_3D_CARD} relative h-full rounded-xl bg-secondary/40 p-4 transition-colors duration-300 sm:p-5`}
+        >
           <EducationItem
             icon={<GraduationCap className="h-5 w-5" />}
             title="Master's — Business Analytics"
@@ -726,7 +767,9 @@ function CertificationCard({
   certifications: string[];
 }) {
   return (
-    <div className="relative h-full rounded-xl border border-white/10 bg-secondary/40 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_14px_32px_rgba(0,0,0,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_38px_rgba(0,0,0,0.32),0_0_22px_rgba(55,190,255,0.08)] sm:p-5">
+    <div
+      className={`${INTERACTIVE_3D_CARD} relative h-full rounded-xl bg-secondary/40 p-4 transition-colors duration-300 sm:p-5`}
+    >
       <div className="flex items-center gap-3">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
@@ -810,7 +853,7 @@ function Projects() {
         {projects.map((project) => (
           <article
             key={project.title}
-            className={`${STATIC_3D_CARD} group rounded-xl bg-secondary/40 p-4 sm:p-6`}
+            className={`${STATIC_3D_CARD} group rounded-xl bg-secondary/40 p-4 transition-colors duration-300 sm:p-6`}
           >
             <p className="text-[10px] uppercase tracking-widest text-primary sm:text-xs">
               {project.tag}
@@ -900,13 +943,13 @@ function Contact() {
           href="#"
           className="
             inline-flex min-h-[48px] w-full items-center justify-center
-            gap-2.5 rounded-xl border border-white/10 bg-white/[0.04]
+            gap-2.5 rounded-xl border border-border bg-secondary/60
             px-4 py-3 text-sm font-semibold text-foreground
-            shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_10px_22px_rgba(0,0,0,0.22)]
+            shadow-[var(--shadow-card)]
             transition-all duration-300 ease-out
             hover:-translate-y-0.5
             hover:border-primary/35
-            hover:bg-white/[0.07]
+            hover:bg-secondary
             sm:w-auto sm:px-5 sm:text-base
           "
         >
