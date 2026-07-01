@@ -14,12 +14,28 @@ import {
   Linkedin,
   Mail,
   MapPin,
+  Moon,
   Phone,
   Search,
+  Sun,
   Users,
 } from "lucide-react";
 
 import portrait from "./assets/portrait.jpg";
+
+type Theme = "light" | "dark";
+
+function getInitialTheme(): Theme {
+  const savedTheme = localStorage.getItem("portfolio-theme");
+
+  if (savedTheme === "light" || savedTheme === "dark") {
+    return savedTheme;
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
 
 type TabKey = "about" | "background" | "projects" | "contact";
 
@@ -31,12 +47,18 @@ const TABS: { key: TabKey; label: string }[] = [
 ];
 
 const STATIC_3D_CARD =
-  "border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_-1px_0_rgba(0,0,0,0.25),0_16px_34px_rgba(0,0,0,0.28)]";
+  "border border-border shadow-[var(--shadow-card)]";
 
 export default function App() {
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [tab, setTab] = useState<TabKey>("about");
   const [displayedTab, setDisplayedTab] = useState<TabKey>("about");
   const [contentVisible, setContentVisible] = useState(true);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("portfolio-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     if (tab === displayedTab) {
@@ -52,6 +74,12 @@ export default function App() {
         setContentVisible(true);
       });
     }, 180);
+
+    const toggleTheme = () => {
+      setTheme((currentTheme) =>
+        currentTheme === "dark" ? "light" : "dark",
+      );
+    };
 
     return () => {
       window.clearTimeout(timeout);
