@@ -664,7 +664,7 @@ function Background() {
               {capability.items.map((item, index) => (
                 <li
                   key={item}
-                  className={`py-3 text-sm leading-6 text-foreground/85 transition-all duration-200 hover:pl-1 hover:text-primary sm:py-4 sm:text-[15px] ${
+                  className={`py-3 text-sm leading-6 text-foreground/85 transition-all duration-200 hover:pl-1 hover:text-primary sm:py-3 sm:text-[15px] ${
                     index !== capability.items.length - 1
                       ? "border-b border-border"
                       : ""
