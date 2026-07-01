@@ -1,5 +1,5 @@
-````md
-# Venkat Mandarapu — Portfolio
+
+# Minimal Portfolio
 
 A modern, responsive personal portfolio website built with React, TypeScript, Vite, Tailwind CSS, and Lucide React.
 
