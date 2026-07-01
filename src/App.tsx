@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowUpRight,
   Award,
@@ -15,7 +15,7 @@ import {
   Phone,
   Search,
   Users,
-  ChevronDown, ChevronUp 
+  ChevronDown, ChevronUp, ArrowRight,
 } from "lucide-react";
 import portrait from "./assets/portrait.jpg";
 
@@ -28,20 +28,57 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "contact", label: "Contact" },
 ];
 
+const STATIC_3D_CARD =
+  "border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),inset_0_-1px_0_rgba(0,0,0,0.25),0_16px_34px_rgba(0,0,0,0.28)]";
+
 export default function App() {
   const [tab, setTab] = useState<TabKey>("about");
+  const [displayedTab, setDisplayedTab] = useState<TabKey>("about");
+  const [contentVisible, setContentVisible] = useState(true);
+
+  useEffect(() => {
+    if (tab === displayedTab) {
+      return;
+    }
+
+    setContentVisible(false);
+
+    const timeout = window.setTimeout(() => {
+      setDisplayedTab(tab);
+
+      requestAnimationFrame(() => {
+        setContentVisible(true);
+      });
+    }, 180);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [tab, displayedTab]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[360px_1fr] lg:px-8 lg:py-12">
         <Sidebar />
-        <main className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] lg:p-10">
+
+         <main
+            className={`${STATIC_3D_CARD} min-w-0 rounded-2xl bg-card p-6 lg:p-10 ${
+              displayedTab === "contact" ? "h-fit self-start" : ""
+            }`}
+          >
           <Tabs current={tab} onChange={setTab} />
-          <div className="mt-10">
-            {tab === "about" && <About />}
-            {tab === "background" && <Background />}
-            {tab === "projects" && <Projects />}
-            {tab === "contact" && <Contact />}
+
+          <div
+            className={`mt-10 transform-gpu transition-all duration-300 ease-out ${
+              contentVisible
+                ? "translate-y-0 opacity-100 blur-0"
+                : "translate-y-2 opacity-0 blur-[2px]"
+            }`}
+          >
+            {displayedTab === "about" && <About />}
+            {displayedTab === "background" && <Background />}
+            {displayedTab === "projects" && <Projects />}
+            {displayedTab === "contact" && <Contact />}
           </div>
         </main>
       </div>
@@ -51,7 +88,7 @@ export default function App() {
 
 function Sidebar() {
   return (
-    <aside className="h-fit rounded-2xl border border-border bg-card p-8 shadow-[var(--shadow-card)] lg:sticky lg:top-8">
+    <aside className={`${STATIC_3D_CARD} h-fit rounded-2xl bg-card p-8 lg:sticky lg:top-8`}>
       <div className="flex flex-col items-center text-center">
         <div className="rounded-full p-[3px]" style={{ background: "var(--gradient-brand)" }}>
           <img
@@ -63,7 +100,7 @@ function Sidebar() {
           />
         </div>
         <h1 className="mt-5 text-xl font-bold tracking-wide">Venkat Mandarapu</h1>
-        <span className="mt-3 rounded-md bg-secondary px-3 py-1 text-xs text-secondary-foreground">
+        <span className="mt-2 inline-flex items-center rounded-[8px] border bg-[#1a202c] px-3 py-1 text-[15px] font-medium text-[#cfd6e4]">
           Analytics Professional
         </span>
       </div>
@@ -92,9 +129,19 @@ function Sidebar() {
 function InfoRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <li className="flex items-center gap-3">
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-primary">
-        {icon}
-      </div>
+      <div
+  className="
+    flex h-9 w-9 items-center justify-center rounded-lg
+    bg-secondary text-primary
+    transition-all duration-200 ease-out
+    hover:-translate-y-0.5
+    hover:bg-primary/15
+    hover:shadow-[0_5px_16px_rgba(55,190,255,0.18)]
+    hover:ring-1 hover:ring-primary/30
+  "
+>
+  {icon}
+</div>
       <div className="text-left">
         <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">{label}</p>
         <p className="text-sm text-foreground">{value}</p>
@@ -123,30 +170,51 @@ function SocialButton({
   );
 }
 
-function Tabs({ current, onChange }: { current: TabKey; onChange: (tab: TabKey) => void }) {
-  return (
-    <nav className="flex flex-wrap justify-end gap-2" aria-label="Portfolio sections">
-      {TABS.map((item) => {
-        const isActive = current === item.key;
+function Tabs({
+  current,
+  onChange,
+}: {
+  current: TabKey;
+  onChange: (tab: TabKey) => void;
+}) {
+  const activeIndex = TABS.findIndex((item) => item.key === current);
 
-        return (
-          <button
-            key={item.key}
-            type="button"
-            aria-pressed={isActive}
-            onClick={() => onChange(item.key)}
-            className={`rounded-lg px-5 py-2 text-sm font-medium transition ${
-              isActive
-                ? "text-primary-foreground shadow-[var(--shadow-card)]"
-                : "bg-secondary text-foreground/80 hover:text-foreground"
-            }`}
-            style={isActive ? { background: "var(--gradient-brand)" } : undefined}
-          >
-            {item.label}
-          </button>
-        );
-      })}
-    </nav>
+  return (
+    <div className="flex justify-end">
+      <nav
+        className="relative inline-grid grid-cols-4 rounded-[18px] border border-border bg-background/40 p-1"
+        aria-label="Portfolio sections"
+      >
+        {/* Sliding active tab */}
+        <span
+          aria-hidden="true"
+          className="absolute bottom-1 left-1 top-1 w-[calc((100%-0.5rem)/4)] rounded-lg bg-gradient-to-r from-[#6576ff] to-[#20c9df] shadow-[0_8px_20px_rgba(70,110,255,0.28)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          style={{
+            transform: `translateX(${activeIndex * 100}%)`,
+          }}
+        />
+
+        {TABS.map((item) => {
+          const isActive = current === item.key;
+
+          return (
+            <button
+              key={item.key}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => onChange(item.key)}
+              className={`relative z-10 rounded-[15px] px-3 py-2.5 text-sm font-medium transition-colors duration-300 ${
+                isActive
+                  ? "text-white"
+                  : "text-foreground/80 hover:text-foreground"
+              }`}
+            >
+              {item.label}
+            </button>
+          );
+        })}
+      </nav>
+    </div>
   );
 }
 
@@ -223,22 +291,37 @@ function About() {
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {services.map((service) => (
           <div
-            key={service.title}
-            className="rounded-xl border border-border bg-secondary/40 p-5 transition hover:border-primary/40"
+        key={service.title}
+        className={`${STATIC_3D_CARD} group relative overflow-hidden rounded-xl bg-secondary/40 p-5`}
+      >
+        <div className="flex items-start gap-4">
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
+            style={{ background: "var(--gradient-brand)" }}
           >
-            <div className="flex items-start gap-4">
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
-                style={{ background: "var(--gradient-brand)" }}
-              >
-                {service.icon}
-              </div>
-              <div>
-                <h4 className="font-semibold">{service.title}</h4>
-                <p className="mt-1 text-sm text-muted-foreground">{service.description}</p>
-              </div>
-            </div>
+            {service.icon}
           </div>
+
+          <div>
+            <h4 className="font-semibold">{service.title}</h4>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              {service.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Hover line */}
+        <span
+          className="
+            pointer-events-none absolute bottom-0 left-1/2
+            h-[3px] w-0 -translate-x-1/2 rounded-full
+            bg-gradient-to-r from-[#6576ff] to-[#20c9df]
+            transition-all duration-300 ease-out
+            group-hover:w-[70%]
+          "
+        />
+</div>
         ))}
       </div>
     </section>
@@ -348,104 +431,110 @@ function Background() {
   return (
     <section>
       <SectionTitle>Experience</SectionTitle>
+        <ol className="relative mt-8">
+          {/* Continuous timeline */}
+          <div className="absolute bottom-7 left-[14px] top-7 w-px bg-[#29313c]" />
 
-<ol className="relative mt-12">
-  {/* Continuous timeline */}
-  <div className="absolute bottom-7 left-[13px] top-7 w-px bg-[#29313c]" />
+          {experience.map((item, index) => {
+            const isExpanded = expandedExperience === index;
 
-  {experience.map((item, index) => {
-    const isExpanded = expandedExperience === index;
+            return (
+              <li
+                key={`${item.role}-${item.organization}`}
+                className="relative pl-12"
+              >
+                {/* Timeline marker */}
+                <span
+                  className={`absolute left-0 top-7 z-10 flex h-7 w-7 items-center justify-center rounded-full ${
+                    isExpanded
+                      ? "bg-gradient-to-br from-[#6576ff] to-[#35d2ff]"
+                      : "border-2 border-[#39424d] bg-[#10151d]"
+                  }`}
+                >
+                  {isExpanded && (
+                    <span className="h-3 w-3 rounded-full bg-[#0b1018]" />
+                  )}
+                </span>
 
-    return (
-      <li
-        key={`${item.role}-${item.organization}`}
-        className="relative pl-12"
-      >
-        {/* Timeline marker */}
-        <span
-          className={`absolute left-0 top-7 z-10 flex h-7 w-7 items-center justify-center rounded-full ${
-            isExpanded
-              ? "bg-gradient-to-br from-[#6576ff] to-[#35d2ff]"
-              : "border-2 border-[#39424d] bg-[#10151d]"
-          }`}
-        >
-          {isExpanded && (
-            <span className="h-3 w-3 rounded-full bg-[#0b1018]" />
-          )}
-        </span>
-
-        <div className="border-b border-[#252d37]">
-          {/* Accordion header */}
-          <button
-            type="button"
-            onClick={() => toggleExperience(index)}
-            aria-expanded={isExpanded}
-            className="flex w-full flex-col items-start justify-between gap-3 py-6 text-left sm:flex-row sm:gap-6"
-          >
-            <div>
-              <h4 className="text-[18px] font-semibold leading-6 text-[#eef0f5]">
-                {item.role}
-              </h4>
-
-              <p className="mt-1 text-[16px] leading-6 text-[#d0d2d8]">
-                {item.organization}
-              </p>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-4 text-[14px] text-[#7f8ea5] sm:pt-1">
-              <span>{item.period}</span>
-
-              {isExpanded ? (
-                <ChevronUp className="h-4 w-4 text-[#d6dbe5]" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-[#d6dbe5]" />
-              )}
-            </div>
-          </button>
-
-          {/* Expanded details */}
-          {isExpanded && (
-            <div className="border-t border-[#252d37] pb-7 pt-5">
-              <ul className="space-y-3">
-                {item.details.map((detail) => (
-                  <li
-                    key={detail}
-                    className="flex items-start gap-4 text-[16px] leading-7 text-[#c8cbd2]"
+                <div className="border-b border-[#252d37]">
+                  {/* Accordion header */}
+                  <button
+                    type="button"
+                    onClick={() => toggleExperience(index)}
+                    aria-expanded={isExpanded}
+                    className="flex w-full flex-col items-start justify-between gap-3 py-6 text-left sm:flex-row sm:gap-6"
                   >
-                    <span className="mt-[11px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#8187ff]" />
+                    <div>
+                      <h4 className="text-[18px] font-semibold leading-6 text-[#eef0f5]">
+                        {item.role}
+                      </h4>
 
-                    <span>{detail}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </li>
-    );
-  })}
-</ol>
+                      <p className="mt-1 text-[16px] leading-6 text-[#d0d2d8]">
+                        {item.organization}
+                      </p>
+                    </div>
 
-      {/* Capabilities */}
-      <h3 className="mt-12 mb-6 text-2xl font-bold">
-        Capabilities
-      </h3>
+                    <div className="flex shrink-0 items-center gap-4 text-[15px] text-[#7f8ea5] sm:pt-1">
+                      <span>{item.period}</span>
 
-      <div className="grid gap-4 md:grid-cols-3">
+                      {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-[#d6dbe5]" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-[#d6dbe5]" />
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Expanded details */}
+                  {isExpanded && (
+                    <div className="border-t border-[#252d37] pb-7 pt-5">
+                      <ul className="space-y-3">
+                        {item.details.map((detail) => (
+                          <li
+                            key={detail}
+                            className="flex items-start gap-4 text-[15px] leading-5 text-[#c8cbd2]"
+                          >
+                            <span className="mt-[11px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#8187ff]" />
+
+                            <span>{detail}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+
+      <div className="mt-12 mb-8">
+        <h3 className="text-3xl font-bold">
+          Capabilities
+        </h3>
+
+        <div
+          className="mt-3 h-1 w-[50px] rounded-full"
+          style={{ background: "var(--gradient-brand)" }}
+        />
+      </div>
+
+      <div className="grid gap-10 md:grid-cols-3">
         {capabilities.map((capability) => (
-          <div
-            key={capability.title}
-            className="rounded-xl border border-border bg-secondary/40 p-5"
-          >
-            <h4 className="mb-3 font-semibold text-primary">
+          <div key={capability.title} className="min-w-0">
+            <h4 className="mb-2 whitespace-nowrap bg-gradient-to-r from-[#7b82ff] to-[#35d2ff] bg-clip-text text-[14px] font-semibold uppercase tracking-[0.1em] text-transparent">
               {capability.title}
             </h4>
 
-            <ul className="flex flex-wrap gap-2">
-              {capability.items.map((item) => (
+            <ul>
+              {capability.items.map((item, index) => (
                 <li
                   key={item}
-                  className="rounded-md bg-secondary px-2.5 py-1 text-xs text-muted-foreground"
+                  className={`py-4 text-[15px] leading-6 text-foreground/85 transition-all duration-200 hover:pl-1 hover:text-primary ${
+                    index !== capability.items.length - 1
+                      ? "border-b border-white/10"
+                      : ""
+                  }`}
                 >
                   {item}
                 </li>
@@ -456,13 +545,20 @@ function Background() {
       </div>
 
       {/* Education and Certifications */}
-      <h3 className="mt-12 mb-6 text-2xl font-bold">
-        Education &amp; Certifications
-      </h3>
+      <div className="mt-12 mb-6">
+        <h3 className="text-3xl font-bold">
+          Education &amp; Certifications
+        </h3>
+
+        <div
+          className="mt-3 h-1 w-[50px] rounded-full"
+          style={{ background: "var(--gradient-brand)" }}
+        />
+      </div>
 
       <div className="grid items-stretch gap-4 md:grid-cols-2">
         {/* Left education card */}
-        <div className="h-full rounded-xl border border-border bg-secondary/40 p-5">
+        <div className="relative h-full rounded-xl border border-white/10 bg-secondary/40 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_14px_32px_rgba(0,0,0,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_38px_rgba(0,0,0,0.32),0_0_22px_rgba(55,190,255,0.08)]">
           <EducationItem
             icon={<GraduationCap className="h-5 w-5" />}
             title="Master's — Business Analytics"
@@ -520,11 +616,11 @@ function EducationItem({
           {organization}
         </p>
 
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="mt-[-1px] text-[13px] text-muted-foreground">
           {meta}
         </p>
 
-        <p className="mt-2 text-sm leading-5 text-muted-foreground">
+        <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
           {description}
         </p>
       </div>
@@ -538,7 +634,7 @@ function CertificationCard({
   certifications: string[];
 }) {
   return (
-    <div className="h-full rounded-xl border border-border bg-secondary/40 p-5">
+    <div className="relative h-full rounded-xl border border-white/10 bg-secondary/40 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_14px_32px_rgba(0,0,0,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_38px_rgba(0,0,0,0.32),0_0_22px_rgba(55,190,255,0.08)]">
       {/* Badge and vertically centered title */}
       <div className="flex items-center gap-3">
         <div
@@ -557,8 +653,16 @@ function CertificationCard({
         {certifications.map((certification) => (
           <li
             key={certification}
-            className="max-w-full rounded-full border border-border bg-secondary px-4 py-2 text-sm text-muted-foreground"
-          >
+            className="
+  max-w-full cursor-default rounded-full border border-border
+  bg-secondary px-4 py-2 text-sm text-muted-foreground
+  transition-all duration-200 ease-out
+  hover:-translate-y-0.5
+  hover:border-primary/30
+  hover:bg-primary/15
+  hover:text-primary
+  hover:shadow-[0_5px_16px_rgba(55,190,255,0.15)]
+">
             {certification}
           </li>
         ))}
@@ -611,7 +715,7 @@ function Projects() {
         {projects.map((project) => (
           <article
             key={project.title}
-            className="group rounded-xl border border-border bg-secondary/40 p-6 transition hover:border-primary/40"
+            className={`${STATIC_3D_CARD} group rounded-xl bg-secondary/40 p-6`}
           >
             <p className="text-xs uppercase tracking-widest text-primary">{project.tag}</p>
             <h3 className="mt-2 text-xl font-bold">{project.title}</h3>
@@ -622,8 +726,16 @@ function Projects() {
               {project.metrics.map((metric) => (
                 <li
                   key={metric}
-                  className="rounded-md bg-secondary px-3 py-1.5 text-xs text-foreground/90"
-                >
+                  className="
+  cursor-default rounded-md bg-secondary
+  px-3 py-1.5 text-xs text-foreground/90
+  transition-all duration-200 ease-out
+  hover:-translate-y-0.5
+  hover:bg-primary/15
+  hover:text-primary
+  hover:shadow-[0_5px_16px_rgba(55,190,255,0.15)]
+  hover:ring-1 hover:ring-primary/30
+">
                   {metric}
                 </li>
               ))}
@@ -649,36 +761,44 @@ function Contact() {
         &quot;Always open to new opportunities, interesting problems, and good conversations. If you
         think we&apos;d be a great fit — reach out, I&apos;d love to connect.&quot;
       </p>
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+      <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <a
           href="mailto:hello@example.com"
-          className="flex items-center gap-4 rounded-xl border border-border bg-secondary/40 p-5 transition hover:border-primary/40"
+          className="
+            group inline-flex min-h-[48px] items-center justify-center gap-2.5
+            rounded-xl px-5 py-3 font-semibold text-white
+            shadow-[0_12px_26px_rgba(73,103,255,0.28)]
+            transition-all duration-300 ease-out
+            hover:-translate-y-0.5
+            hover:shadow-[0_16px_32px_rgba(73,103,255,0.38)]
+          "
+          style={{
+            background: "linear-gradient(90deg, #6576ff 0%, #35d2ff 100%)",
+          }}
         >
-          <div
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-primary-foreground"
-            style={{ background: "var(--gradient-brand)" }}
-          >
-            <Mail className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Email</p>
-            <p className="font-medium">hello@example.com</p>
-          </div>
+          <Mail className="h-4 w-4 shrink-0" />
+
+          <span>hello@example.com</span>
+
+          <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
         </a>
+
         <a
           href="#"
-          className="flex items-center gap-4 rounded-xl border border-border bg-secondary/40 p-5 transition hover:border-primary/40"
+          className="
+            inline-flex min-h-[48px] items-center justify-center gap-2.5
+            rounded-xl border border-white/10 bg-white/[0.04]
+            px-5 py-3 font-semibold text-foreground
+            shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_10px_22px_rgba(0,0,0,0.22)]
+            transition-all duration-300 ease-out
+            hover:-translate-y-0.5
+            hover:border-primary/35
+            hover:bg-white/[0.07]
+          "
         >
-          <div
-            className="flex h-11 w-11 items-center justify-center rounded-lg text-primary-foreground"
-            style={{ background: "var(--gradient-brand)" }}
-          >
-            <Linkedin className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">LinkedIn</p>
-            <p className="font-medium">LinkedIn Profile</p>
-          </div>
+          <Linkedin className="h-4 w-4 shrink-0" />
+
+          <span>LinkedIn Profile</span>
         </a>
       </div>
     </section>
