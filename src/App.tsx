@@ -15,6 +15,7 @@ import {
   Phone,
   Search,
   Users,
+  ChevronDown, ChevronUp 
 } from "lucide-react";
 import portrait from "./assets/portrait.jpg";
 
@@ -245,6 +246,12 @@ function About() {
 }
 
 function Background() {
+  const [expandedExperience, setExpandedExperience] = useState<number>(0);
+  const toggleExperience = (index: number) => {
+  setExpandedExperience((currentIndex) =>
+    currentIndex === index ? -1 : index,
+  );
+};
   const experience = [
     {
       role: "Senior Business Analyst",
@@ -331,43 +338,109 @@ function Background() {
     },
   ];
 
+  const certifications = [
+    "Microsoft Excel",
+    "Google Program Management Professional",
+    "AI for Everyone",
+    "Microsoft Power BI PL-300 (In Progress)",
+  ];
+
   return (
     <section>
       <SectionTitle>Experience</SectionTitle>
-      <ol className="relative space-y-6 border-l border-border pl-6">
-        {experience.map((item) => (
-          <li key={item.role} className="relative">
-            <span
-              className="absolute -left-[31px] mt-1 flex h-4 w-4 items-center justify-center rounded-full ring-4 ring-card"
-              style={{ background: "var(--gradient-brand)" }}
-            />
-            <div className="rounded-xl border border-border bg-secondary/40 p-5">
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h4 className="font-semibold">{item.role}</h4>
-                <span className="text-xs text-muted-foreground">{item.period}</span>
-              </div>
-              <p className="mt-1 text-sm text-primary">{item.organization}</p>
-              <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+
+<ol className="relative mt-12">
+  {/* Continuous timeline */}
+  <div className="absolute bottom-7 left-[13px] top-7 w-px bg-[#29313c]" />
+
+  {experience.map((item, index) => {
+    const isExpanded = expandedExperience === index;
+
+    return (
+      <li
+        key={`${item.role}-${item.organization}`}
+        className="relative pl-12"
+      >
+        {/* Timeline marker */}
+        <span
+          className={`absolute left-0 top-7 z-10 flex h-7 w-7 items-center justify-center rounded-full ${
+            isExpanded
+              ? "bg-gradient-to-br from-[#6576ff] to-[#35d2ff]"
+              : "border-2 border-[#39424d] bg-[#10151d]"
+          }`}
+        >
+          {isExpanded && (
+            <span className="h-3 w-3 rounded-full bg-[#0b1018]" />
+          )}
+        </span>
+
+        <div className="border-b border-[#252d37]">
+          {/* Accordion header */}
+          <button
+            type="button"
+            onClick={() => toggleExperience(index)}
+            aria-expanded={isExpanded}
+            className="flex w-full flex-col items-start justify-between gap-3 py-6 text-left sm:flex-row sm:gap-6"
+          >
+            <div>
+              <h4 className="text-[18px] font-semibold leading-6 text-[#eef0f5]">
+                {item.role}
+              </h4>
+
+              <p className="mt-1 text-[16px] leading-6 text-[#d0d2d8]">
+                {item.organization}
+              </p>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-4 text-[14px] text-[#7f8ea5] sm:pt-1">
+              <span>{item.period}</span>
+
+              {isExpanded ? (
+                <ChevronUp className="h-4 w-4 text-[#d6dbe5]" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-[#d6dbe5]" />
+              )}
+            </div>
+          </button>
+
+          {/* Expanded details */}
+          {isExpanded && (
+            <div className="border-t border-[#252d37] pb-7 pt-5">
+              <ul className="space-y-3">
                 {item.details.map((detail) => (
-                  <li key={detail} className="flex gap-2">
-                    <span className="text-primary">•</span>
-                    {detail}
+                  <li
+                    key={detail}
+                    className="flex items-start gap-4 text-[16px] leading-7 text-[#c8cbd2]"
+                  >
+                    <span className="mt-[11px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#8187ff]" />
+
+                    <span>{detail}</span>
                   </li>
                 ))}
               </ul>
             </div>
-          </li>
-        ))}
-      </ol>
+          )}
+        </div>
+      </li>
+    );
+  })}
+</ol>
 
-      <h3 className="mt-12 mb-6 text-2xl font-bold">Capabilities</h3>
+      {/* Capabilities */}
+      <h3 className="mt-12 mb-6 text-2xl font-bold">
+        Capabilities
+      </h3>
+
       <div className="grid gap-4 md:grid-cols-3">
         {capabilities.map((capability) => (
           <div
             key={capability.title}
             className="rounded-xl border border-border bg-secondary/40 p-5"
           >
-            <h4 className="mb-3 font-semibold text-primary">{capability.title}</h4>
+            <h4 className="mb-3 font-semibold text-primary">
+              {capability.title}
+            </h4>
+
             <ul className="flex flex-wrap gap-2">
               {capability.items.map((item) => (
                 <li
@@ -382,42 +455,41 @@ function Background() {
         ))}
       </div>
 
-      <h3 className="mt-12 mb-6 text-2xl font-bold">Education & Certifications</h3>
-      <div className="grid gap-4 md:grid-cols-2">
-        <EducationCard
-          icon={<GraduationCap className="h-5 w-5" />}
-          title="Master's — Business Analytics"
-          organization="University Name"
-          meta="2024 — 2026"
-          description="Operations Analytics, Financial Analytics, Data Mining, Database Management."
-        />
-        <EducationCard
-          icon={<GraduationCap className="h-5 w-5" />}
-          title="Bachelor's — Business Administration"
-          organization="College Name"
-          meta="2018 — 2021"
-          description="Analytics, Statistics, Power BI, Supply Chain, Research Methods."
-        />
-        <EducationCard
-          icon={<Award className="h-5 w-5" />}
-          title="Professional Certifications"
-          organization="Microsoft · Coursera · LinkedIn Learning"
-          meta="2021 — Present"
-          description="Excel, Power BI, SQL, Agile, Business Analysis foundations."
-        />
-        <EducationCard
-          icon={<Briefcase className="h-5 w-5" />}
-          title="Recognition"
-          organization="Best Employee of the Year"
-          meta="—"
-          description="Awarded for high-impact analyses and stakeholder communication."
-        />
+      {/* Education and Certifications */}
+      <h3 className="mt-12 mb-6 text-2xl font-bold">
+        Education &amp; Certifications
+      </h3>
+
+      <div className="grid items-stretch gap-4 md:grid-cols-2">
+        {/* Left education card */}
+        <div className="h-full rounded-xl border border-border bg-secondary/40 p-5">
+          <EducationItem
+            icon={<GraduationCap className="h-5 w-5" />}
+            title="Master's — Business Analytics"
+            organization="Lewis University"
+            meta="2024 — 2026 · CGPA 3.7 / 4.0"
+            description="Operations Analytics, Financial Analytics, Supply Chain Analytics, Data Mining, and Database Management."
+          />
+
+          <div className="my-6 h-px bg-border" />
+
+          <EducationItem
+            icon={<GraduationCap className="h-5 w-5" />}
+            title="Bachelor's in Business Administration — Business Analytics"
+            organization="Parvathaneni Brahmayya Siddhartha College of Arts & Science"
+            meta="2018 — 2021"
+            description="Business Analytics, Python for Data Science, Power BI, Statistics, Financial Analytics, Supply Chain Analytics, and Research Methods."
+          />
+        </div>
+
+        {/* Right certification card */}
+        <CertificationCard certifications={certifications} />
       </div>
     </section>
   );
 }
 
-function EducationCard({
+function EducationItem({
   icon,
   title,
   organization,
@@ -431,21 +503,66 @@ function EducationCard({
   description: string;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-secondary/40 p-5">
-      <div className="flex items-start gap-3">
+    <div className="flex items-start gap-3">
+      <div
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
+        style={{ background: "var(--gradient-brand)" }}
+      >
+        {icon}
+      </div>
+
+      <div className="min-w-0">
+        <h4 className="font-semibold leading-5">
+          {title}
+        </h4>
+
+        <p className="mt-1 text-sm text-primary">
+          {organization}
+        </p>
+
+        <p className="mt-1 text-xs text-muted-foreground">
+          {meta}
+        </p>
+
+        <p className="mt-2 text-sm leading-5 text-muted-foreground">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function CertificationCard({
+  certifications,
+}: {
+  certifications: string[];
+}) {
+  return (
+    <div className="h-full rounded-xl border border-border bg-secondary/40 p-5">
+      {/* Badge and vertically centered title */}
+      <div className="flex items-center gap-3">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
           style={{ background: "var(--gradient-brand)" }}
         >
-          {icon}
+          <Award className="h-5 w-5" />
         </div>
-        <div>
-          <h4 className="font-semibold">{title}</h4>
-          <p className="text-sm text-primary">{organization}</p>
-          <p className="text-xs text-muted-foreground">{meta}</p>
-          <p className="mt-2 text-sm text-muted-foreground">{description}</p>
-        </div>
+
+        <h4 className="font-semibold leading-5">
+          Professional Certifications
+        </h4>
       </div>
+
+      <ul className="mt-5 flex flex-col items-start gap-3">
+        {certifications.map((certification) => (
+          <li
+            key={certification}
+            className="max-w-full rounded-full border border-border bg-secondary px-4 py-2 text-sm text-muted-foreground"
+          >
+            {certification}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
