@@ -1,9 +1,11 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
+  ArrowRight,
   ArrowUpRight,
   Award,
   BarChart3,
-  Briefcase,
+  ChevronDown,
+  ChevronUp,
   GitBranch,
   Github,
   GraduationCap,
@@ -15,8 +17,8 @@ import {
   Phone,
   Search,
   Users,
-  ChevronDown, ChevronUp, ArrowRight,
 } from "lucide-react";
+
 import portrait from "./assets/portrait.jpg";
 
 type TabKey = "about" | "background" | "projects" | "contact";
@@ -58,18 +60,18 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[360px_1fr] lg:px-8 lg:py-12">
+      <div className="mx-auto grid w-full max-w-7xl items-start gap-4 px-3 py-4 sm:gap-6 sm:px-5 sm:py-8 lg:grid-cols-[360px_minmax(0,1fr)] lg:px-8 lg:py-12">
         <Sidebar />
 
-         <main
-            className={`${STATIC_3D_CARD} min-w-0 rounded-2xl bg-card p-6 lg:p-10 ${
-              displayedTab === "contact" ? "h-fit self-start" : ""
-            }`}
-          >
+        <main
+          className={`${STATIC_3D_CARD} min-w-0 rounded-2xl bg-card p-4 sm:p-6 lg:p-10 ${
+            displayedTab === "contact" ? "h-fit self-start" : ""
+          }`}
+        >
           <Tabs current={tab} onChange={setTab} />
 
           <div
-            className={`mt-10 transform-gpu transition-all duration-300 ease-out ${
+            className={`mt-8 transform-gpu transition-all duration-300 ease-out sm:mt-10 ${
               contentVisible
                 ? "translate-y-0 opacity-100 blur-0"
                 : "translate-y-2 opacity-0 blur-[2px]"
@@ -88,36 +90,65 @@ export default function App() {
 
 function Sidebar() {
   return (
-    <aside className={`${STATIC_3D_CARD} h-fit rounded-2xl bg-card p-8 lg:sticky lg:top-8`}>
+    <aside
+      className={`${STATIC_3D_CARD} h-fit rounded-2xl bg-card p-5 sm:p-8 lg:sticky lg:top-8`}
+    >
       <div className="flex flex-col items-center text-center">
-        <div className="rounded-full p-[3px]" style={{ background: "var(--gradient-brand)" }}>
+        <div
+          className="rounded-full p-[3px]"
+          style={{ background: "var(--gradient-brand)" }}
+        >
           <img
             src={portrait}
             alt="Portrait"
             width={160}
             height={160}
-            className="h-40 w-40 rounded-full object-cover"
+            className="h-28 w-28 rounded-full object-cover sm:h-40 sm:w-40"
           />
         </div>
-        <h1 className="mt-5 text-xl font-bold tracking-wide">Venkat Mandarapu</h1>
-        <span className="mt-2 inline-flex items-center rounded-[8px] border bg-[#1a202c] px-3 py-1 text-[15px] font-medium text-[#cfd6e4]">
+
+        <h1 className="mt-5 text-lg font-bold tracking-wide sm:text-xl">
+          Venkat Mandarapu
+        </h1>
+
+        <span className="mt-2 inline-flex items-center rounded-[8px] border bg-[#1a202c] px-3 py-1 text-[13px] font-medium text-[#cfd6e4] sm:text-[15px]">
           Analytics Professional
         </span>
       </div>
-      <div className="my-6 h-px bg-border" />
+
+      <div className="my-5 h-px bg-border sm:my-6" />
+
       <ul className="space-y-4 text-sm">
-        <InfoRow icon={<Mail className="h-4 w-4" />} label="EMAIL" value="hello@example.com" />
-        <InfoRow icon={<Phone className="h-4 w-4" />} label="PHONE" value="+1 (555) 000-0000" />
-        <InfoRow icon={<MapPin className="h-4 w-4" />} label="LOCATION" value="City, Country" />
+        <InfoRow
+          icon={<Mail className="h-4 w-4" />}
+          label="EMAIL"
+          value="hello@example.com"
+        />
+
+        <InfoRow
+          icon={<Phone className="h-4 w-4" />}
+          label="PHONE"
+          value="+1 (555) 000-0000"
+        />
+
+        <InfoRow
+          icon={<MapPin className="h-4 w-4" />}
+          label="LOCATION"
+          value="City, Country"
+        />
       </ul>
-      <div className="my-6 h-px bg-border" />
+
+      <div className="my-5 h-px bg-border sm:my-6" />
+
       <div className="flex justify-center gap-3">
         <SocialButton href="#" label="GitHub">
           <Github className="h-4 w-4" />
         </SocialButton>
+
         <SocialButton href="#" label="LinkedIn">
           <Linkedin className="h-4 w-4" />
         </SocialButton>
+
         <SocialButton href="mailto:hello@example.com" label="Email">
           <Mail className="h-4 w-4" />
         </SocialButton>
@@ -126,25 +157,39 @@ function Sidebar() {
   );
 }
 
-function InfoRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+function InfoRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+}) {
   return (
-    <li className="flex items-center gap-3">
+    <li className="flex min-w-0 items-center gap-3">
       <div
-  className="
-    flex h-9 w-9 items-center justify-center rounded-lg
-    bg-secondary text-primary
-    transition-all duration-200 ease-out
-    hover:-translate-y-0.5
-    hover:bg-primary/15
-    hover:shadow-[0_5px_16px_rgba(55,190,255,0.18)]
-    hover:ring-1 hover:ring-primary/30
-  "
->
-  {icon}
-</div>
-      <div className="text-left">
-        <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">{label}</p>
-        <p className="text-sm text-foreground">{value}</p>
+        className="
+          flex h-9 w-9 shrink-0 items-center justify-center rounded-lg
+          bg-secondary text-primary
+          transition-all duration-200 ease-out
+          hover:-translate-y-0.5
+          hover:bg-primary/15
+          hover:shadow-[0_5px_16px_rgba(55,190,255,0.18)]
+          hover:ring-1 hover:ring-primary/30
+        "
+      >
+        {icon}
+      </div>
+
+      <div className="min-w-0 text-left">
+        <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">
+          {label}
+        </p>
+
+        <p className="break-all text-sm text-foreground sm:break-normal">
+          {value}
+        </p>
       </div>
     </li>
   );
@@ -163,7 +208,16 @@ function SocialButton({
     <a
       href={href}
       aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition hover:text-primary"
+      className="
+        flex h-9 w-9 items-center justify-center rounded-lg
+        bg-secondary text-muted-foreground
+        transition-all duration-200 ease-out
+        hover:-translate-y-0.5
+        hover:bg-primary/15
+        hover:text-primary
+        hover:shadow-[0_5px_16px_rgba(55,190,255,0.18)]
+        hover:ring-1 hover:ring-primary/30
+      "
     >
       {children}
     </a>
@@ -180,16 +234,16 @@ function Tabs({
   const activeIndex = TABS.findIndex((item) => item.key === current);
 
   return (
-    <div className="flex justify-end">
+    <div className="flex w-full justify-center sm:justify-end">
       <nav
-        className="relative inline-grid grid-cols-4 rounded-[18px] border border-border bg-background/40 p-1"
+        className="relative grid w-full grid-cols-4 overflow-hidden rounded-[18px] border border-border bg-background/40 p-1 sm:w-auto"
         aria-label="Portfolio sections"
       >
-        {/* Sliding active tab */}
         <span
           aria-hidden="true"
-          className="absolute bottom-1 left-1 top-1 w-[calc((100%-0.5rem)/4)] rounded-lg bg-gradient-to-r from-[#6576ff] to-[#20c9df] shadow-[0_8px_20px_rgba(70,110,255,0.28)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          className="absolute bottom-1 left-1 top-1 rounded-lg bg-gradient-to-r from-[#6576ff] to-[#20c9df] shadow-[0_8px_20px_rgba(70,110,255,0.28)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={{
+            width: "calc((100% - 0.5rem) / 4)",
             transform: `translateX(${activeIndex * 100}%)`,
           }}
         />
@@ -203,7 +257,7 @@ function Tabs({
               type="button"
               aria-pressed={isActive}
               onClick={() => onChange(item.key)}
-              className={`relative z-10 rounded-[15px] px-3 py-2.5 text-sm font-medium transition-colors duration-300 ${
+              className={`relative z-10 min-w-0 rounded-[15px] px-1 py-2.5 text-[11px] font-medium transition-colors duration-300 sm:px-3 sm:text-sm ${
                 isActive
                   ? "text-white"
                   : "text-foreground/80 hover:text-foreground"
@@ -220,9 +274,15 @@ function Tabs({
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-8">
-      <h2 className="text-3xl font-bold">{children}</h2>
-      <div className="mt-2 h-1 w-14 rounded-full" style={{ background: "var(--gradient-brand)" }} />
+    <div className="mb-6 sm:mb-8">
+      <h2 className="text-2xl font-bold sm:text-3xl">
+        {children}
+      </h2>
+
+      <div
+        className="mt-2 h-1 w-12 rounded-full sm:w-14"
+        style={{ background: "var(--gradient-brand)" }}
+      />
     </div>
   );
 }
@@ -270,58 +330,67 @@ function About() {
   return (
     <section>
       <SectionTitle>About Me</SectionTitle>
-      <div className="space-y-5 text-[15px] leading-relaxed text-muted-foreground">
+
+      <div className="space-y-4 text-sm leading-relaxed text-muted-foreground sm:space-y-5 sm:text-[15px]">
         <p>
-          Hi — I&apos;m an analytics professional who believes curiosity is the most underrated
-          skill in business.
+          Hi — I&apos;m an analytics professional who believes curiosity is the
+          most underrated skill in business.
         </p>
+
         <p>
-          I&apos;ve spent the last several years moving across industries — technology, consulting,
-          logistics, financial services, and operations — and every team I&apos;ve worked with has
-          had the same underlying problem: too much data, not enough clarity.
+          I&apos;ve spent the last several years moving across industries —
+          technology, consulting, logistics, financial services, and operations
+          — and every team I&apos;ve worked with has had the same underlying
+          problem: too much data, not enough clarity.
         </p>
+
         <p>
-          That&apos;s where I come in. I translate messy business questions into structured
-          analysis, clear requirements, and dashboards leaders actually use. Add this is a
-          placeholder bio you can rewrite to match your story.
+          That&apos;s where I come in. I translate messy business questions into
+          structured analysis, clear requirements, and dashboards leaders
+          actually use. Add this is a placeholder bio you can rewrite to match
+          your story.
         </p>
       </div>
 
-      <h3 className="mt-12 text-xl font-semibold">What I&apos;m Doing</h3>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <h3 className="mt-10 text-lg font-semibold sm:mt-12 sm:text-xl">
+        What I&apos;m Doing
+      </h3>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
         {services.map((service) => (
           <div
-        key={service.title}
-        className={`${STATIC_3D_CARD} group relative overflow-hidden rounded-xl bg-secondary/40 p-5`}
-      >
-        <div className="flex items-start gap-4">
-          <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
-            style={{ background: "var(--gradient-brand)" }}
+            key={service.title}
+            className={`${STATIC_3D_CARD} group relative overflow-hidden rounded-xl bg-secondary/40 p-4 sm:p-5`}
           >
-            {service.icon}
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
+                style={{ background: "var(--gradient-brand)" }}
+              >
+                {service.icon}
+              </div>
+
+              <div className="min-w-0">
+                <h4 className="font-semibold">
+                  {service.title}
+                </h4>
+
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  {service.description}
+                </p>
+              </div>
+            </div>
+
+            <span
+              className="
+                pointer-events-none absolute bottom-0 left-1/2
+                h-[3px] w-0 -translate-x-1/2 rounded-full
+                bg-gradient-to-r from-[#6576ff] to-[#20c9df]
+                transition-all duration-300 ease-out
+                group-hover:w-[70%]
+              "
+            />
           </div>
-
-          <div>
-            <h4 className="font-semibold">{service.title}</h4>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              {service.description}
-            </p>
-          </div>
-        </div>
-
-        {/* Hover line */}
-        <span
-          className="
-            pointer-events-none absolute bottom-0 left-1/2
-            h-[3px] w-0 -translate-x-1/2 rounded-full
-            bg-gradient-to-r from-[#6576ff] to-[#20c9df]
-            transition-all duration-300 ease-out
-            group-hover:w-[70%]
-          "
-        />
-</div>
         ))}
       </div>
     </section>
@@ -330,11 +399,13 @@ function About() {
 
 function Background() {
   const [expandedExperience, setExpandedExperience] = useState<number>(0);
+
   const toggleExperience = (index: number) => {
-  setExpandedExperience((currentIndex) =>
-    currentIndex === index ? -1 : index,
-  );
-};
+    setExpandedExperience((currentIndex) =>
+      currentIndex === index ? -1 : index,
+    );
+  };
+
   const experience = [
     {
       role: "Senior Business Analyst",
@@ -431,85 +502,81 @@ function Background() {
   return (
     <section>
       <SectionTitle>Experience</SectionTitle>
-        <ol className="relative mt-8">
-          {/* Continuous timeline */}
-          <div className="absolute bottom-7 left-[14px] top-7 w-px bg-[#29313c]" />
 
-          {experience.map((item, index) => {
-            const isExpanded = expandedExperience === index;
+      <ol className="relative mt-6 sm:mt-8">
+        <div className="absolute bottom-6 left-[11px] top-6 w-px bg-[#29313c] sm:bottom-7 sm:left-[14px] sm:top-7" />
 
-            return (
-              <li
-                key={`${item.role}-${item.organization}`}
-                className="relative pl-12"
+        {experience.map((item, index) => {
+          const isExpanded = expandedExperience === index;
+
+          return (
+            <li
+              key={`${item.role}-${item.organization}`}
+              className="relative pl-9 sm:pl-12"
+            >
+              <span
+                className={`absolute left-0 top-5 z-10 flex h-6 w-6 items-center justify-center rounded-full sm:top-7 sm:h-7 sm:w-7 ${
+                  isExpanded
+                    ? "bg-gradient-to-br from-[#6576ff] to-[#35d2ff]"
+                    : "border-2 border-[#39424d] bg-[#10151d]"
+                }`}
               >
-                {/* Timeline marker */}
-                <span
-                  className={`absolute left-0 top-7 z-10 flex h-7 w-7 items-center justify-center rounded-full ${
-                    isExpanded
-                      ? "bg-gradient-to-br from-[#6576ff] to-[#35d2ff]"
-                      : "border-2 border-[#39424d] bg-[#10151d]"
-                  }`}
+                {isExpanded && (
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#0b1018] sm:h-3 sm:w-3" />
+                )}
+              </span>
+
+              <div className="border-b border-[#252d37]">
+                <button
+                  type="button"
+                  onClick={() => toggleExperience(index)}
+                  aria-expanded={isExpanded}
+                  className="flex w-full flex-col items-start justify-between gap-3 py-5 text-left sm:flex-row sm:gap-6 sm:py-6"
                 >
-                  {isExpanded && (
-                    <span className="h-3 w-3 rounded-full bg-[#0b1018]" />
-                  )}
-                </span>
+                  <div className="min-w-0">
+                    <h4 className="text-base font-semibold leading-6 text-[#eef0f5] sm:text-[18px]">
+                      {item.role}
+                    </h4>
 
-                <div className="border-b border-[#252d37]">
-                  {/* Accordion header */}
-                  <button
-                    type="button"
-                    onClick={() => toggleExperience(index)}
-                    aria-expanded={isExpanded}
-                    className="flex w-full flex-col items-start justify-between gap-3 py-6 text-left sm:flex-row sm:gap-6"
-                  >
-                    <div>
-                      <h4 className="text-[18px] font-semibold leading-6 text-[#eef0f5]">
-                        {item.role}
-                      </h4>
+                    <p className="mt-1 text-sm leading-6 text-[#d0d2d8] sm:text-[16px]">
+                      {item.organization}
+                    </p>
+                  </div>
 
-                      <p className="mt-1 text-[16px] leading-6 text-[#d0d2d8]">
-                        {item.organization}
-                      </p>
-                    </div>
+                  <div className="flex w-full shrink-0 items-center justify-between gap-3 text-xs text-[#7f8ea5] sm:w-auto sm:justify-start sm:gap-4 sm:pt-1 sm:text-[15px]">
+                    <span>{item.period}</span>
 
-                    <div className="flex shrink-0 items-center gap-4 text-[15px] text-[#7f8ea5] sm:pt-1">
-                      <span>{item.period}</span>
+                    {isExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-[#d6dbe5]" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-[#d6dbe5]" />
+                    )}
+                  </div>
+                </button>
 
-                      {isExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-[#d6dbe5]" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4 text-[#d6dbe5]" />
-                      )}
-                    </div>
-                  </button>
+                {isExpanded && (
+                  <div className="border-t border-[#252d37] pb-6 pt-4 sm:pb-7 sm:pt-5">
+                    <ul className="space-y-3">
+                      {item.details.map((detail) => (
+                        <li
+                          key={detail}
+                          className="flex items-start gap-3 text-sm leading-6 text-[#c8cbd2] sm:gap-4 sm:text-[15px]"
+                        >
+                          <span className="mt-[9px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#8187ff]" />
+                          <span>{detail}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
 
-                  {/* Expanded details */}
-                  {isExpanded && (
-                    <div className="border-t border-[#252d37] pb-7 pt-5">
-                      <ul className="space-y-3">
-                        {item.details.map((detail) => (
-                          <li
-                            key={detail}
-                            className="flex items-start gap-4 text-[15px] leading-5 text-[#c8cbd2]"
-                          >
-                            <span className="mt-[11px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#8187ff]" />
-
-                            <span>{detail}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-
-      <div className="mt-12 mb-8">
-        <h3 className="text-3xl font-bold">
+      <div className="mt-10 mb-6 sm:mt-12 sm:mb-8">
+        <h3 className="text-2xl font-bold sm:text-3xl">
           Capabilities
         </h3>
 
@@ -519,10 +586,10 @@ function Background() {
         />
       </div>
 
-      <div className="grid gap-10 md:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
         {capabilities.map((capability) => (
           <div key={capability.title} className="min-w-0">
-            <h4 className="mb-2 whitespace-nowrap bg-gradient-to-r from-[#7b82ff] to-[#35d2ff] bg-clip-text text-[14px] font-semibold uppercase tracking-[0.1em] text-transparent">
+            <h4 className="mb-2 bg-gradient-to-r from-[#7b82ff] to-[#35d2ff] bg-clip-text text-[12px] font-semibold uppercase tracking-[0.05em] text-transparent sm:text-[13px] sm:tracking-[0.08em] lg:whitespace-nowrap lg:text-[14px] lg:tracking-[0.1em]">
               {capability.title}
             </h4>
 
@@ -530,7 +597,7 @@ function Background() {
               {capability.items.map((item, index) => (
                 <li
                   key={item}
-                  className={`py-4 text-[15px] leading-6 text-foreground/85 transition-all duration-200 hover:pl-1 hover:text-primary ${
+                  className={`py-3 text-sm leading-6 text-foreground/85 transition-all duration-200 hover:pl-1 hover:text-primary sm:py-3 sm:text-[15px] ${
                     index !== capability.items.length - 1
                       ? "border-b border-white/10"
                       : ""
@@ -544,9 +611,8 @@ function Background() {
         ))}
       </div>
 
-      {/* Education and Certifications */}
-      <div className="mt-12 mb-6">
-        <h3 className="text-3xl font-bold">
+      <div className="mt-10 mb-6 sm:mt-12">
+        <h3 className="text-2xl font-bold sm:text-3xl">
           Education &amp; Certifications
         </h3>
 
@@ -556,9 +622,8 @@ function Background() {
         />
       </div>
 
-      <div className="grid items-stretch gap-4 md:grid-cols-2">
-        {/* Left education card */}
-        <div className="relative h-full rounded-xl border border-white/10 bg-secondary/40 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_14px_32px_rgba(0,0,0,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_38px_rgba(0,0,0,0.32),0_0_22px_rgba(55,190,255,0.08)]">
+      <div className="grid items-stretch gap-4 lg:grid-cols-2">
+        <div className="relative h-full rounded-xl border border-white/10 bg-secondary/40 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_14px_32px_rgba(0,0,0,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_38px_rgba(0,0,0,0.32),0_0_22px_rgba(55,190,255,0.08)] sm:p-5">
           <EducationItem
             icon={<GraduationCap className="h-5 w-5" />}
             title="Master's — Business Analytics"
@@ -567,7 +632,7 @@ function Background() {
             description="Operations Analytics, Financial Analytics, Supply Chain Analytics, Data Mining, and Database Management."
           />
 
-          <div className="my-6 h-px bg-border" />
+          <div className="my-5 h-px bg-border sm:my-6" />
 
           <EducationItem
             icon={<GraduationCap className="h-5 w-5" />}
@@ -578,7 +643,6 @@ function Background() {
           />
         </div>
 
-        {/* Right certification card */}
         <CertificationCard certifications={certifications} />
       </div>
     </section>
@@ -599,7 +663,7 @@ function EducationItem({
   description: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex min-w-0 items-start gap-3">
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
         style={{ background: "var(--gradient-brand)" }}
@@ -608,19 +672,19 @@ function EducationItem({
       </div>
 
       <div className="min-w-0">
-        <h4 className="font-semibold leading-5">
+        <h4 className="break-words text-sm font-semibold leading-5 sm:text-base">
           {title}
         </h4>
 
-        <p className="mt-1 text-sm text-primary">
+        <p className="mt-1 break-words text-[13px] text-primary sm:text-sm">
           {organization}
         </p>
 
-        <p className="mt-[-1px] text-[13px] text-muted-foreground">
+        <p className="mt-[-1px] text-xs text-muted-foreground sm:text-[13px]">
           {meta}
         </p>
 
-        <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
+        <p className="mt-2 text-xs leading-5 text-muted-foreground sm:text-[13px]">
           {description}
         </p>
       </div>
@@ -634,8 +698,7 @@ function CertificationCard({
   certifications: string[];
 }) {
   return (
-    <div className="relative h-full rounded-xl border border-white/10 bg-secondary/40 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_14px_32px_rgba(0,0,0,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_38px_rgba(0,0,0,0.32),0_0_22px_rgba(55,190,255,0.08)]">
-      {/* Badge and vertically centered title */}
+    <div className="relative h-full rounded-xl border border-white/10 bg-secondary/40 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_14px_32px_rgba(0,0,0,0.24)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_18px_38px_rgba(0,0,0,0.32),0_0_22px_rgba(55,190,255,0.08)] sm:p-5">
       <div className="flex items-center gap-3">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
@@ -644,7 +707,7 @@ function CertificationCard({
           <Award className="h-5 w-5" />
         </div>
 
-        <h4 className="font-semibold leading-5">
+        <h4 className="text-sm font-semibold leading-5 sm:text-base">
           Professional Certifications
         </h4>
       </div>
@@ -654,15 +717,18 @@ function CertificationCard({
           <li
             key={certification}
             className="
-  max-w-full cursor-default rounded-full border border-border
-  bg-secondary px-4 py-2 text-sm text-muted-foreground
-  transition-all duration-200 ease-out
-  hover:-translate-y-0.5
-  hover:border-primary/30
-  hover:bg-primary/15
-  hover:text-primary
-  hover:shadow-[0_5px_16px_rgba(55,190,255,0.15)]
-">
+              w-fit max-w-full cursor-default whitespace-normal break-words
+              rounded-full border border-border bg-secondary
+              px-3 py-2 text-left text-xs text-muted-foreground
+              transition-all duration-200 ease-out
+              hover:-translate-y-0.5
+              hover:border-primary/30
+              hover:bg-primary/15
+              hover:text-primary
+              hover:shadow-[0_5px_16px_rgba(55,190,255,0.15)]
+              sm:px-4 sm:text-sm
+            "
+          >
             {certification}
           </li>
         ))}
@@ -711,40 +777,52 @@ function Projects() {
   return (
     <section>
       <SectionTitle>Case Studies</SectionTitle>
-      <div className="space-y-5">
+
+      <div className="space-y-4 sm:space-y-5">
         {projects.map((project) => (
           <article
             key={project.title}
-            className={`${STATIC_3D_CARD} group rounded-xl bg-secondary/40 p-6`}
+            className={`${STATIC_3D_CARD} group rounded-xl bg-secondary/40 p-4 sm:p-6`}
           >
-            <p className="text-xs uppercase tracking-widest text-primary">{project.tag}</p>
-            <h3 className="mt-2 text-xl font-bold">{project.title}</h3>
+            <p className="text-[10px] uppercase tracking-widest text-primary sm:text-xs">
+              {project.tag}
+            </p>
+
+            <h3 className="mt-2 text-lg font-bold sm:text-xl">
+              {project.title}
+            </h3>
+
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {project.description}
             </p>
+
             <ul className="mt-4 flex flex-wrap gap-2">
               {project.metrics.map((metric) => (
                 <li
                   key={metric}
                   className="
-  cursor-default rounded-md bg-secondary
-  px-3 py-1.5 text-xs text-foreground/90
-  transition-all duration-200 ease-out
-  hover:-translate-y-0.5
-  hover:bg-primary/15
-  hover:text-primary
-  hover:shadow-[0_5px_16px_rgba(55,190,255,0.15)]
-  hover:ring-1 hover:ring-primary/30
-">
+                    cursor-default rounded-md bg-secondary
+                    px-2.5 py-1.5 text-[11px] text-foreground/90
+                    transition-all duration-200 ease-out
+                    hover:-translate-y-0.5
+                    hover:bg-primary/15
+                    hover:text-primary
+                    hover:shadow-[0_5px_16px_rgba(55,190,255,0.15)]
+                    hover:ring-1 hover:ring-primary/30
+                    sm:px-3 sm:text-xs
+                  "
+                >
                   {metric}
                 </li>
               ))}
             </ul>
+
             <a
               href="#"
               className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
             >
-              Read more <ArrowUpRight className="h-4 w-4" />
+              Read more
+              <ArrowUpRight className="h-4 w-4" />
             </a>
           </article>
         ))}
@@ -757,28 +835,35 @@ function Contact() {
   return (
     <section>
       <SectionTitle>Let&apos;s Talk</SectionTitle>
-      <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
-        &quot;Always open to new opportunities, interesting problems, and good conversations. If you
-        think we&apos;d be a great fit — reach out, I&apos;d love to connect.&quot;
+
+      <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+        &quot;Always open to new opportunities, interesting problems, and good
+        conversations. If you think we&apos;d be a great fit — reach out,
+        I&apos;d love to connect.&quot;
       </p>
+
       <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
         <a
           href="mailto:hello@example.com"
           className="
-            group inline-flex min-h-[48px] items-center justify-center gap-2.5
-            rounded-xl px-5 py-3 font-semibold text-white
+            group inline-flex min-h-[48px] w-full items-center justify-center
+            gap-2.5 rounded-xl px-4 py-3 text-sm font-semibold text-white
             shadow-[0_12px_26px_rgba(73,103,255,0.28)]
             transition-all duration-300 ease-out
             hover:-translate-y-0.5
             hover:shadow-[0_16px_32px_rgba(73,103,255,0.38)]
+            sm:w-auto sm:px-5 sm:text-base
           "
           style={{
-            background: "linear-gradient(90deg, #6576ff 0%, #35d2ff 100%)",
+            background:
+              "linear-gradient(90deg, #6576ff 0%, #35d2ff 100%)",
           }}
         >
           <Mail className="h-4 w-4 shrink-0" />
 
-          <span>hello@example.com</span>
+          <span className="break-all text-center sm:break-normal">
+            hello@example.com
+          </span>
 
           <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
         </a>
@@ -786,18 +871,18 @@ function Contact() {
         <a
           href="#"
           className="
-            inline-flex min-h-[48px] items-center justify-center gap-2.5
-            rounded-xl border border-white/10 bg-white/[0.04]
-            px-5 py-3 font-semibold text-foreground
+            inline-flex min-h-[48px] w-full items-center justify-center
+            gap-2.5 rounded-xl border border-white/10 bg-white/[0.04]
+            px-4 py-3 text-sm font-semibold text-foreground
             shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_10px_22px_rgba(0,0,0,0.22)]
             transition-all duration-300 ease-out
             hover:-translate-y-0.5
             hover:border-primary/35
             hover:bg-white/[0.07]
+            sm:w-auto sm:px-5 sm:text-base
           "
         >
           <Linkedin className="h-4 w-4 shrink-0" />
-
           <span>LinkedIn Profile</span>
         </a>
       </div>
