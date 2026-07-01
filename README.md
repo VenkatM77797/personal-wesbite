@@ -348,9 +348,9 @@ This project is available for personal portfolio use.
 
 **Venkat Mandarapu**
 
-* GitHub: [your-username](https://github.com/your-username)
-* LinkedIn: [your-profile](https://www.linkedin.com/in/your-profile)
-* Email: [your-email@example.com](mailto:your-email@example.com)
+* GitHub: [your-username](https://venkatm77797.github.io/)
+* LinkedIn: [your-profile](https://www.linkedin.com/in/venkat-mandarapu/)
+* Email: [your-email@example.com](mailto:venkat77797@gmail.com)
 
 ```
 ```
