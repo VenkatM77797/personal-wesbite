@@ -2,7 +2,9 @@
 # Minimal Portfolio
 
 A modern, responsive personal portfolio website built with React, TypeScript, Vite, Tailwind CSS, and Lucide React.
-
+cdsmk
+cncnweim
+ine
 The portfolio highlights professional experience, capabilities, education, certifications, projects, and contact information through a clean tab-based interface with light and dark themes.
 
 ## Features
